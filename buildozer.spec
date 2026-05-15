@@ -23,7 +23,7 @@ version = 1.0
 # fpdf2==2.7.9  → versão que NÃO usa o módulo 'cgi' (removido no Python 3.13)
 # kivymd==1.2.0 → estável com kivy 2.3.0
 # ezdxf==1.3.4  → versão testada no Android
-requirements = python3,kivy==2.3.0,kivymd==1.1.1,fpdf2==2.7.9,ezdxf==1.3.4,plyer,android,pillow
+requirements = python3,kivy==2.2.1,kivymd==1.1.1,fpdf2==2.7.9,ezdxf==1.3.4,plyer,android,pillow
 
 # Orientação da tela
 orientation = portrait
@@ -38,7 +38,7 @@ android.minapi = 26
 android.sdk = 33
 
 # NDK (não mexa nisso)
-android.ndk = 25b
+android.ndk = 23b
 
 # Arquitetura (arm64-v8a funciona na maioria dos celulares modernos)
 android.archs = arm64-v8a
