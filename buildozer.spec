@@ -12,6 +12,8 @@ package.domain = org.obra
 # Arquivo principal do seu app
 source.main = main.py
 
+source.dir = .
+
 # Versão
 version = 1.0
 
