@@ -38,7 +38,7 @@ android.minapi = 26
 android.sdk = 33
 
 # NDK (não mexa nisso)
-android.ndk = 23b
+android.ndk = 25b
 
 # Arquitetura (arm64-v8a funciona na maioria dos celulares modernos)
 android.archs = arm64-v8a
@@ -48,6 +48,7 @@ android.features = android.hardware.camera, android.hardware.location.gps
 
 # Aceitar automaticamente licenças do Android SDK
 android.accept_sdk_license = True
+p4a.branch = develop
 
 [buildozer]
 
