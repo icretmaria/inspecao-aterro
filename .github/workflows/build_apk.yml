@@ -33,16 +33,24 @@ jobs:
           pip install buildozer cython virtualenv
 
       - name: Compilar APK
-        run: buildozer android debug 2>&1 | tee build.log; tail -50 build.log
+        run: |
+          buildozer android debug 2>&1 | tee build.log
+          echo "=== ULTIMAS LINHAS ==="
+          tail -80 build.log
 
-      - name: Mostrar erro se falhar
-        if: failure()
-        run: grep -i "error\|exception\|failed" build.log | tail -30
+      - name: Mostrar erros
+        if: always()
+        run: |
+          echo "=== ERROS ENCONTRADOS ==="
+          grep -i "error\|exception\|failed\|traceback" build.log | tail -40 || echo "Nenhum erro encontrado no grep"
+          echo "=== ARQUIVOS GERADOS ==="
+          find . -name "*.apk" 2>/dev/null || echo "Nenhum APK encontrado"
 
       - name: Salvar APK para download
-        if: success()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: InspecaoAterro-APK
           path: bin/*.apk
+          if-no-files-found: warn
           retention-days: 30
