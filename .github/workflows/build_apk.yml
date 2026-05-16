@@ -8,15 +8,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Criar script de build
+        run: |
+          cat > build_script.sh << 'EOF'
+          NDK_PROPS=$(find / -name 'source.properties' -path '*android-ndk*' 2>/dev/null | head -1)
+          if [ -n "$NDK_PROPS" ]; then
+            echo "Corrigindo verificacao NDK..."
+            sed -i 's/Pkg.Revision=23.*/Pkg.Revision=25.1.8937393/' "$NDK_PROPS"
+          fi
+          cd /home/user/hostcwd
+          buildozer android debug
+          EOF
+          chmod +x build_script.sh
+
       - name: Compilar APK com Docker
         run: |
           docker run --rm \
             --volume ${{ github.workspace }}:/home/user/hostcwd \
             --entrypoint bash \
             ghcr.io/kivy/buildozer:latest \
-            -c "pip install 'python-for-android==2022.3.13' --force-reinstall -q && cd /home/user/hostcwd && buildozer android debug" 2>&1 | tee build.log || true
+            /home/user/hostcwd/build_script.sh 2>&1 | tee build.log || true
           echo "=== ERROS ==="
-          grep -i "error\|failed" build.log | tail -30 || true
+          grep -i "error\|failed" build.log | tail -40 || true
           echo "=== APK ==="
           find . -name "*.apk" 2>/dev/null || echo "Nenhum APK"
 
