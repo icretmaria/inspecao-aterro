@@ -13,8 +13,9 @@ jobs:
           docker run --rm \
             --user root \
             --volume ${{ github.workspace }}:/home/user/hostcwd \
+            --entrypoint bash \
             ghcr.io/kivy/buildozer:latest \
-            android debug 2>&1 | tee build.log || true
+            -c "pip install 'python-for-android==2022.3.13' --force-reinstall -q && cd /home/user/hostcwd && buildozer android debug" 2>&1 | tee build.log || true
           echo "=== ERROS ==="
           grep -i "error\|failed" build.log | tail -30 || true
           echo "=== APK ==="
