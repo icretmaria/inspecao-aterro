@@ -32,7 +32,7 @@ orientation = portrait
 android.permissions = INTERNET, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, CAMERA, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE
 
 # Versão mínima do Android (Android 8.0+)
-android.minapi = 26
+android.minapi = 21
 
 # SDK alvo
 android.sdk = 33
@@ -48,7 +48,6 @@ android.features = android.hardware.camera, android.hardware.location.gps
 
 # Aceitar automaticamente licenças do Android SDK
 android.accept_sdk_license = True
-p4a.branch = develop
 
 [buildozer]
 
