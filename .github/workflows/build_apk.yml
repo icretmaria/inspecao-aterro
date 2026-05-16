@@ -8,34 +8,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Criar scripts
-        run: |
-          cat > patch_p4a.py << 'EOF'
-import glob, re, os
-for f in glob.glob('/home/user/.venv/lib/*/site-packages/pythonforandroid/*.py'):
-    try:
-        txt = open(f).read()
-        if 'MIN_NDK_API' in txt:
-            new_txt = re.sub(r'MIN_NDK_API\s*=\s*\d+', 'MIN_NDK_API = 1', txt)
-            if new_txt != txt:
-                open(f, 'w').write(new_txt)
-                print('Patched:', f)
-    except Exception as e:
-        print('Erro:', e)
-EOF
-
-          cat > build_script.sh << 'EOF'
-#!/bin/bash
-python3 /home/user/hostcwd/patch_p4a.py
-cd /home/user/hostcwd
-buildozer android debug
-EOF
-          chmod +x build_script.sh
-
       - name: Compilar APK com Docker
         run: |
           docker run --rm \
             --volume ${{ github.workspace }}:/home/user/hostcwd \
             --entrypoint bash \
             ghcr.io/kivy/buildozer:latest \
-            /home/user/hostcwd
+            -c "python3 /home/user/hostcwd/patch_p4a.py && cd /home/user/hostcwd && buildozer android debug" 2>&1 | tee build.log || true
+          echo "=== ERROS ==="
+          grep -i "error\|failed" build.log | tail -40 || true
+          echo "=== APK ==="
+          find . -name "*.apk" 2>/dev/null || echo "Nenhum APK"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: InspecaoAterro-APK
+          path: bin/*.apk
+          if-no-files-found: warn
+          retention-days: 30
