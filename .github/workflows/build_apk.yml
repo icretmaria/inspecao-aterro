@@ -9,48 +9,19 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-
       - name: Baixar arquivos do repositório
         uses: actions/checkout@v4
 
-      - name: Configurar Python 3.10
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
-      - name: Instalar dependências do sistema
+      - name: Compilar APK com Docker Kivy
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y \
-            build-essential git zip unzip openjdk-17-jdk \
-            libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev \
-            libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev \
-            zlib1g-dev libltdl-dev autoconf libtool
-
-      - name: Instalar Buildozer e Cython
-        run: |
-          pip install --upgrade pip
-          pip install buildozer cython virtualenv
-
-      - name: Compilar APK
-        run: |
-          buildozer android debug 2>&1 | tee build.log
-          echo "=== ULTIMAS LINHAS ==="
-          tail -80 build.log
-
-      - name: Mostrar erros
-        if: always()
-        run: |
-          echo "=== ERROS ENCONTRADOS ==="
-          grep -i "error\|exception\|failed\|traceback" build.log | tail -40 || echo "Nenhum erro encontrado no grep"
-          echo "=== ARQUIVOS GERADOS ==="
-          find . -name "*.apk" 2>/dev/null || echo "Nenhum APK encontrado"
+          docker run --rm \
+            --volume ${{ github.workspace }}:/home/user/hostcwd \
+            kivy/buildozer:latest \
+            android debug
 
       - name: Salvar APK para download
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: InspecaoAterro-APK
           path: bin/*.apk
-          if-no-files-found: warn
           retention-days: 30
